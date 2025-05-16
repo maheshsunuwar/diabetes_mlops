@@ -23,12 +23,12 @@ class DiabetesInput(BaseModel):
 
 # load model from mlflow
 model_name = 'diabetes-ridge-model'
-model_stage = 'Staging' # or 'Production'
+# model_stage = 'Staging' # or 'Production'
 # model_version = '1'
-model = mlflow.pyfunc.load_model(f'models:/{model_name}/{model_stage}')
+# model = mlflow.pyfunc.load_model(f'models:/{model_name}/{model_stage}')
 
-# run_id = '0760de80da5e485eb1ecabb96dd4adbc'
-# model = mlflow.pyfunc.load_model(f'/app/mlruns/1/{run_id}/artifacts/model')
+run_id = '0760de80da5e485eb1ecabb96dd4adbc'
+model = mlflow.pyfunc.load_model(f'/app/mlruns/1/{run_id}/artifacts/model')
 
 @app.get('/health')
 def health():
