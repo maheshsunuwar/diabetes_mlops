@@ -1,0 +1,5 @@
+[core]
+    autostage = true
+    remote = mldev
+['remote "mldev"']
+    url = https://filebrowser.machinelearningdev.com/files/home/diabetes-mlops/

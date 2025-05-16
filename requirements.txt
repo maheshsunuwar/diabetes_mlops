@@ -2,3 +2,8 @@ pandas
 scikit-learn
 matplotlib
 dvc
+mlflow
+
+fastapi
+uvicorn
+pydantic

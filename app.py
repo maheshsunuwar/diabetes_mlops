@@ -2,9 +2,12 @@ from fastapi import FastAPI
 import mlflow
 import pandas as pd
 from pydantic import BaseModel
-
+import uvicorn
 
 app = FastAPI()
+# mlflow.set_tracking_uri("http://host.docker.internal:4999")
+# mlflow.set_tracking_uri("http://localhost:4999")
+mlflow.set_tracking_uri("http://mlflow:5000")
 
 class DiabetesInput(BaseModel):
     age: float
@@ -20,12 +23,12 @@ class DiabetesInput(BaseModel):
 
 # load model from mlflow
 model_name = 'diabetes-ridge-model'
-# # model_stage = 'None', #'Staging' # or 'Production'
-# model_version = '2'
-# model = mlflow.pyfunc.load_model(f'models:/{model_name}/{model_version}')
+model_stage = 'Staging' # or 'Production'
+# model_version = '1'
+model = mlflow.pyfunc.load_model(f'models:/{model_name}/{model_stage}')
 
-run_id = '63b603e6533d4c00979dcacec0684a5a'
-model = mlflow.pyfunc.load_model(f'../mlruns/0/{run_id}/artifacts/model')
+# run_id = '0760de80da5e485eb1ecabb96dd4adbc'
+# model = mlflow.pyfunc.load_model(f'/app/mlruns/1/{run_id}/artifacts/model')
 
 @app.get('/health')
 def health():
@@ -40,3 +43,6 @@ def predict(data: DiabetesInput):
     return {
         'prediction': prediction.tolist()[0]
     }
+
+if __name__ == '__main__':
+    uvicorn.run('app:app', host='0.0.0.0', port=8000)

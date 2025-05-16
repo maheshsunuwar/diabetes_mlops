@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: diabetes-api
+    env: docker
+    plan: free
+    branch: main
+    region: oregon:
+    dockerfilePath: dockerfilePathenvVars
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: "1"
+    disk:
+      name: mlruns
+      mountPath: /app/mlruns
+      sizeGB: 1
