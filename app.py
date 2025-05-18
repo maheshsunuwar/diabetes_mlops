@@ -8,7 +8,7 @@ import os
 
 load_dotenv()
 MLFLOW_TRACKING_URI = os.environ['MLFLOW_TRACKING_URI']
-STAGE=os.environ['STAGE']
+STAGE=os.environ.get('STAGE', 'Production')
 mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 mlflow.set_registry_uri(MLFLOW_TRACKING_URI)
 
