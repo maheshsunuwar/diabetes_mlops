@@ -1,0 +1,27 @@
+name: Train and Register Model
+
+on:
+  push:
+    branches: [master]
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        name:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Training
+        env:
+          MLFLOW_TRACKING_URI: http://mlflow.machinelearningdev.com
+        run: |
+          python train.py

@@ -6,9 +6,17 @@ import mlflow
 import mlflow.sklearn
 from sklearn.linear_model import Ridge
 from sklearn.metrics import mean_squared_error
-mlflow.set_tracking_uri("http://localhost:4999")
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+MLFLOW_TRACKING_URI = os.environ['MLFLOW_TRACKING_URI']
+MLFLOW_REGISTRY_URI = MLFLOW_TRACKING_URI
+STAGE = os.environ['STAGE']
+
+mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
+mlflow.set_registry_uri(MLFLOW_REGISTRY_URI)
 mlflow.set_experiment("diabetes")
-mlflow.set_registry_uri("http://localhost:4999")
 
 # load data
 train = pd.read_csv('data/train.csv')
@@ -49,7 +57,7 @@ with mlflow.start_run():
     client.transition_model_version_stage(
         name=registered_model_name,
         version=latest_version,
-        stage = 'Staging',
+        stage = STAGE,
         archive_existing_versions=True
     )
-    print(f"Model version {latest_version} promoted to Staging")
+    print(f"Model version {latest_version} promoted to {STAGE}")
