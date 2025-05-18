@@ -7,3 +7,5 @@ mlflow
 fastapi
 uvicorn
 pydantic
+dotenv
+boto3
