@@ -3,7 +3,7 @@ services:
     build: .
     container_name: diabetes-api
     ports:
-      - "8000:8000"
+      - "9003:8000"
     environment:
       - MLFLOW_TRACKING_URI: $MLFLOW_TRACKING_URI
       - MLFLOW_S3_ENDPOINT_URL: $MLFLOW_S3_ENDPOINT_URL
