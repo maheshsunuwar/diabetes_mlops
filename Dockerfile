@@ -7,15 +7,15 @@ WORKDIR /app
 # copy code
 COPY . .
 
-# install system dependencies
-RUN apt-get update && apt-get install -y gcc && rm -rf /var/lib/apt/lists/*
+install system dependencies
+# RUN apt-get update && apt-get install -y gcc && rm -rf /var/lib/apt/lists/*
 
 # install python dependencies
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 # expose port
-EXPOSE 8000
+EXPOSE 9003
 
 # run fastapi server
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "9003"]
