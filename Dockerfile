@@ -2,12 +2,12 @@
 FROM python:3.9-slim
 
 # set working dir
-WORKDIR /app
+WORKDIR /
 
 # copy code
 COPY . .
 
-install system dependencies
+# install system dependencies
 # RUN apt-get update && apt-get install -y gcc && rm -rf /var/lib/apt/lists/*
 
 # install python dependencies
