@@ -2,7 +2,7 @@
 FROM python:3.9-slim
 
 # set working dir
-WORKDIR /
+WORKDIR /app
 
 # copy code
 COPY . .
