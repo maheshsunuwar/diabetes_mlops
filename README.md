@@ -76,15 +76,16 @@ Used diabetes dataset from scikit-learn in this project.
 - [x] Private MinIO artifact store
 
 ####  WIP
-- [x] Model version change detection
-- [x] Data drift alerts
-- [x] Streamlit dashboard for inspection → React frontend
-- [x] Authentication for admin dashboard
-- [x] Monitoring (Prometheus + Grafana)
+- [ ] Model version change detection
+- [ ] Data drift alerts
+- [ ] Streamlit dashboard for inspection → React frontend
+- [ ] Authentication for admin dashboard
+- [ ] Monitoring (Prometheus + Grafana)
 
 
 #### Author
 **Mahesh Sunuwar**
+
 Machine Learning Engineer
 
 Connect: [LinkedIn](https://www.linkedin.com/in/mahesh-sunuwar/) | [GitHub](https://github.com/maheshsunuwar)
