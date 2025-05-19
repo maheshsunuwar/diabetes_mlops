@@ -21,7 +21,6 @@ mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 mlflow.set_registry_uri(MLFLOW_TRACKING_URI)
 
 #create tables if it doesnot exist
-Base.metadata.drop_all(bind=engine)
 Base.metadata.create_all(bind=engine)
 
 @asynccontextmanager
