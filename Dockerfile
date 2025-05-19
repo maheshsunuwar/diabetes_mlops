@@ -13,7 +13,7 @@ COPY . .
 # install python dependencies
 RUN pip install --upgrade pip
 RUN pip install uv
-RUN uv pip install -r requirements.txt
+RUN uv pip install -r requirements.txt --system
 
 # expose port
 EXPOSE 9003
