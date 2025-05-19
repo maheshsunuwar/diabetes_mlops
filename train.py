@@ -9,9 +9,10 @@ from sklearn.metrics import mean_squared_error
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
+load_dotenv(override=True)
 MLFLOW_TRACKING_URI = os.environ['MLFLOW_TRACKING_URI']
 MLFLOW_REGISTRY_URI = MLFLOW_TRACKING_URI
+MLFLOW_S3_ENDPOINT_URL = os.environ['MLFLOW_S3_ENDPOINT_URL']
 STAGE = os.environ['STAGE']
 
 mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
