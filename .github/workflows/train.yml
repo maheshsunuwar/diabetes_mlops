@@ -1,10 +1,10 @@
-name: Train and Register Model
+name: Train, Register, and Deploy ML Model
 
 on:
   push:
     branches: [master]
 jobs:
-  train:
+  train-register-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -22,6 +22,13 @@ jobs:
 
       - name: Run Training
         env:
-          MLFLOW_TRACKING_URI: http://mlflow.machinelearningdev.com
+          MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
+          MLFLOW_S3_ENDPOINT_URL: ${{ secrets.MLFLOW_S3_ENDPOINT_URL }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           python train.py
+      - name: Reload API model
+        run: |
+          curl -X POST https://diabetes.machinelearningdev.com/reload \
+            -H "x-api-key: ${{ secrets.RELOAD_API_KEY }}"
