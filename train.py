@@ -20,7 +20,7 @@ mlflow.set_registry_uri(MLFLOW_REGISTRY_URI)
 mlflow.set_experiment("diabetes")
 
 # load data
-train = pd.read_csv('data/train.csv')
+train = pd.read_csv('src/data/train.csv')
 y = train['target']
 X = train.drop(columns='target')
 
