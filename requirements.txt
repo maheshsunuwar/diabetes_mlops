@@ -9,3 +9,4 @@ uvicorn
 pydantic
 dotenv
 boto3
+dvc-s3
