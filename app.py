@@ -1,5 +1,7 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException, Header
+import json
+from uuid import uuid4
+from fastapi import Depends, FastAPI, HTTPException, Header
 import mlflow
 import pandas as pd
 from pydantic import BaseModel
@@ -7,12 +9,20 @@ import uvicorn
 from dotenv import load_dotenv
 import os
 
+from sqlalchemy.orm import Session
+from db import DbSession, get_db, engine
+from models import Base, Prediction
+
 load_dotenv(override=True)
 MLFLOW_TRACKING_URI = os.environ['MLFLOW_TRACKING_URI']
 STAGE=os.environ.get('STAGE', 'Production')
 RELOAD_API_KEY = os.getenv("RELOAD_API_KEY")
 mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 mlflow.set_registry_uri(MLFLOW_TRACKING_URI)
+
+#create tables if it doesnot exist
+Base.metadata.drop_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 
 @asynccontextmanager
 async def lifesapan(app: FastAPI):
@@ -57,12 +67,24 @@ def health():
     }
 
 @app.post('/predict')
-def predict(data: DiabetesInput):
+def predict(data: DiabetesInput, db: Session = Depends(get_db)):
     input_data = pd.DataFrame([data.dict()])
-    prediction = model.predict(input_data)
+    prediction = model.predict(input_data).tolist()[0]
+
+    db_prediction = Prediction(
+        id = uuid4(),
+        input_json=json.dumps(data.dict()),
+        prediction=prediction,
+        model_version=STAGE
+    )
+
+    db.add(db_prediction)
+    db.commit()
+
     return {
-        'prediction': prediction.tolist()[0]
+        'prediction' : prediction
     }
+
 
 @app.post('/reload')
 def reload_model(x_api_key: str = Header(None)):
@@ -75,5 +97,5 @@ def reload_model(x_api_key: str = Header(None)):
         }
     raise HTTPException(status_code=500, detail='Reload Failed')
 
-# if __name__ == '__main__':
-#     uvicorn.run('app:app', host='0.0.0.0', port=9003)
+if __name__ == '__main__':
+    uvicorn.run('app:app', host='0.0.0.0', port=9003)
