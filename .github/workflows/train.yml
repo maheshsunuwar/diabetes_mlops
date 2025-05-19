@@ -20,10 +20,13 @@ jobs:
           pip install --upgrade pip
           pip install uv
           uv pip install -r requirements.txt --system
+
       - name: Configure DVC
         run: |
-          dvc remote modify origin access_key_id ${{secrets.AWS_ACCESS_KEY_ID}}
-          dvc remote modify origin secret_access_key ${{secrets.AWS_SECRET_ACCESS_KEY}}
+          dvc remote add -d storage ${{ secrets.S3_DATA}}
+          dvc remote modify storage endpointurl ${{ secrets.MLFLOW_S3_ENDPOINT_URL }}
+          dvc remote modify storage access_key_id ${{secrets.AWS_ACCESS_KEY_ID}}
+          dvc remote modify storage secret_access_key ${{secrets.AWS_SECRET_ACCESS_KEY}}
       - name: Pull data with DVC
         run: |
           dvc pull -v
