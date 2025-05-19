@@ -18,7 +18,8 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install uv
+          uv pip install -r requirements.txt
       - name: Configure DVC
         run: |
           dvc remote modify origin access_key_id ${{secrets.AWS_ACCESS_KEY_ID}}
