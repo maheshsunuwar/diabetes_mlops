@@ -6,7 +6,7 @@ Used diabetes dataset from scikit-learn in this project.
 - Built and trained an ML model
 - Used MLflow for versioning
 - Used docker for the inference
-- Deployed it on [Diabetes](diabetes.machinelearningdev.com/docs) with persistent storage
+- Deployed it on [Diabetes](https://diabetes.machinelearningdev.com/docs) with persistent storage
 - Made it accessible for public
 
 ### What’s Inside
