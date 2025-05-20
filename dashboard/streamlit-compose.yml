@@ -4,10 +4,11 @@ services:
       context: ./
       dockerfile: Dockerfile
     container_name: diabetes-streamlit-frontend
-    command: streamlit run app.py  --server.address 0.0.0.0 --server.port 9004
+    command: streamlit run app.py  --server.address 0.0.0.0 --server.port 9004 --server.fileWatcherType none
     ports:
       - "9004:9004"
     environment:
       - APP_API_KEY=$APP_API_KEY
       - APP_API_URL=$APP_API_URL
       - DATABASE_URL=$DATABASE_URL
+      - STREAMLIT_WATCH_FILE_SYSTEM=$STREAMLIT_WATCH_FILE_SYSTEM
