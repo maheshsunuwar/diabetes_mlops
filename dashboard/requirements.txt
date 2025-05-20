@@ -1,14 +1,8 @@
 pandas
 scikit-learn
 matplotlib
-dvc
-mlflow
 
-fastapi
-uvicorn
 pydantic
 dotenv
-boto3
-dvc-s3
 psycopg2-binary>=2.9.0
-alembic>=1.12.0
+streamlit>=1.30.0
