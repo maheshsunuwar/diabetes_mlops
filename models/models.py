@@ -10,7 +10,7 @@ class Prediction(Base):
     __tablename__ = 'predictions'
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
-    timestamp = Column(DateTime(timezone=True), server_default=func.now())
+    timestamp = Column(DateTime(timezone=True), default=datetime.now(), nullable=False)
     input_json = Column(String)
     prediction = Column(Float)
     model_version = Column(String)
@@ -20,7 +20,7 @@ class Feedback(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     prediction_id = Column(UUID(as_uuid=True), ForeignKey('predictions.id'), nullable=False)
-    timestamp = Column(DateTime(timezone=True), server_default=func.now())
+    timestamp = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     correct = Column(Boolean, nullable=False)
 
     predictions = relationship('Prediction', backref='feedbacks')
