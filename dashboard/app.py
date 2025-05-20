@@ -1,3 +1,4 @@
+import requests
 import streamlit as st
 import psycopg2
 import pandas as pd
@@ -8,19 +9,19 @@ from modules.nav import Navbar
 
 st.set_page_config(page_title="Diabetes Predictor Dashboard")
 
-load_dotenv()
-DB_URL = os.getenv("DATABASE_URL")
+load_dotenv(override=True)
+APP_API_KEY = os.getenv('APP_API_KEY')
+APP_API_URL = os.environ['APP_API_URL']
+
 
 @st.cache_data(ttl=300)
 def get_data():
-    conn = psycopg2.connect(DB_URL)
-    query = """
-            SELECT timestamp, input_json, prediction, model_version
-            FROM predictions ORDER BY timestamp
-            DESC
-            LIMIT 100
-        """
-    df = pd.read_sql(query, conn)
+    headers = {'x-api-key': APP_API_KEY}
+    response = requests.get(
+        f'{APP_API_URL}/get_data',
+        headers=headers
+    )
+    df = pd.DataFrame(response.json()['result'])
     df['input'] = df['input_json'].apply(eval)
     df = pd.concat([df.drop('input_json', axis=1), df['input'].apply(pd.Series)], axis=1)
     return df

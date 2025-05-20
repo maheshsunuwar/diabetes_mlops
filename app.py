@@ -114,6 +114,14 @@ def reload_model(auth: str= Depends(verify_api_key)):
         }
     raise HTTPException(status_code=500, detail='Reload Failed')
 
+@app.get('/get_data')
+def get_data(auth: str = Depends(verify_api_key), db: Session = Depends(get_db)):
+    data = db.query(Prediction).order_by(Prediction.timestamp.desc()).limit(100).all()
+
+    return {
+        'result': data
+    }
+
 
 if __name__ == '__main__':
     uvicorn.run('app:app', host='0.0.0.0', port=9003)

@@ -16,6 +16,9 @@ RUN pip install --upgrade pip
 RUN pip install uv
 RUN uv pip install -r requirements.txt --system
 RUN uv pip install streamlit --system
+RUN uv pip install pydantic --system
+RUN uv pip install dotenv --system
+RUN uv pip install psycopg2-binary --system
 
 # expose port
 EXPOSE 9004
