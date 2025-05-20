@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 import json
-from uuid import uuid4
+from uuid import uuid4, UUID
 from fastapi import Depends, FastAPI, HTTPException, Header
 import mlflow
 import pandas as pd
@@ -11,12 +11,13 @@ import os
 
 from sqlalchemy.orm import Session
 from db import DbSession, get_db, engine
-from models import Base, Prediction
+from models.models import Base, Feedback, Prediction
+from schemas.feedback import FeedbackCreate
 
 load_dotenv(override=True)
 MLFLOW_TRACKING_URI = os.environ['MLFLOW_TRACKING_URI']
 STAGE=os.environ.get('STAGE', 'Production')
-RELOAD_API_KEY = os.getenv("RELOAD_API_KEY")
+APP_API_KEY = os.getenv("APP_API_KEY")
 mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 mlflow.set_registry_uri(MLFLOW_TRACKING_URI)
 
@@ -42,6 +43,10 @@ class DiabetesInput(BaseModel):
     s5 : float
     s6 : float
 
+def verify_api_key(x_api_key: str=Header(...)):
+    if APP_API_KEY and x_api_key != APP_API_KEY:
+        raise HTTPException(status_code=401, detail='Invalid or mission api key.')
+
 def load_model():
     """Loads the latest model.
 
@@ -66,7 +71,7 @@ def health():
     }
 
 @app.post('/predict')
-def predict(data: DiabetesInput, db: Session = Depends(get_db)):
+def predict(data: DiabetesInput, auth:str=Depends(verify_api_key), db: Session = Depends(get_db)):
     input_data = pd.DataFrame([data.dict()])
     prediction = model.predict(input_data).tolist()[0]
 
@@ -81,20 +86,34 @@ def predict(data: DiabetesInput, db: Session = Depends(get_db)):
     db.commit()
 
     return {
-        'prediction' : prediction
+        'prediction' : prediction,
+        'id': db_prediction.id
+    }
+
+@app.post('/log_feedback')
+def log_feedback(data: FeedbackCreate, auth:str=Depends(verify_api_key), db: Session= Depends(get_db)):
+    db_feedback = Feedback(
+        id = uuid4(),
+        prediction_id = UUID(data.id),
+        correct = data.correct
+    )
+    db.add(db_feedback)
+    db.commit()
+
+    return {
+        'status':'ok'
     }
 
 
 @app.post('/reload')
-def reload_model(x_api_key: str = Header(None)):
-    if RELOAD_API_KEY and x_api_key != RELOAD_API_KEY:
-        raise HTTPException(status_code=401, detail='Unauthorized')
+def reload_model(auth: str= Depends(verify_api_key)):
     success = load_model()
     if success:
         return {
             'status': 'Model reloaded.'
         }
     raise HTTPException(status_code=500, detail='Reload Failed')
+
 
 if __name__ == '__main__':
     uvicorn.run('app:app', host='0.0.0.0', port=9003)
