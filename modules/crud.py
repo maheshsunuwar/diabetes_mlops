@@ -2,6 +2,8 @@ from fastapi import Depends
 from requests import Session
 from db import get_db
 from models.models import Feedback, Prediction
+from dotenv import load_dotenv
+load_dotenv(override=True)
 db: Session = next(get_db())
 
 def get_feedback_data():
