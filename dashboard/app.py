@@ -14,7 +14,7 @@ APP_API_KEY = os.getenv('APP_API_KEY')
 APP_API_URL = os.environ['APP_API_URL']
 
 
-@st.cache_data(ttl=300)
+# @st.cache_data(ttl=300)
 def get_data():
     headers = {'x-api-key': APP_API_KEY}
     response = requests.get(

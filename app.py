@@ -12,14 +12,17 @@ import os
 from sqlalchemy.orm import Session
 from db import DbSession, get_db, engine
 from models.models import Base, Feedback, Prediction
-from schemas.feedback import FeedbackCreate
+from schemas.feedback import FeedbackCreate, FeedbackDetail
 
 load_dotenv(override=True)
 MLFLOW_TRACKING_URI = os.environ['MLFLOW_TRACKING_URI']
 STAGE=os.environ.get('STAGE', 'Production')
+EXPERIMENT_NAME = os.environ['EXPERIMENT_NAME']
+REGISTERED_MODEL_NAME = os.environ['REGISTERED_MODEL_NAME']
 APP_API_KEY = os.getenv("APP_API_KEY")
 mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 mlflow.set_registry_uri(MLFLOW_TRACKING_URI)
+mlflow_client = mlflow.MlflowClient()
 
 #create tables if it doesnot exist
 Base.metadata.create_all(bind=engine)
@@ -53,11 +56,11 @@ def load_model():
     Returns:
         bool: True or False
     """
-    model_name = 'diabetes-ridge-model'
     global model
     try:
-        model = mlflow.pyfunc.load_model(f'models:/{model_name}/{STAGE}')
-        print('Model loaded successfully.')
+        model = mlflow.pyfunc.load_model(f'models:/{REGISTERED_MODEL_NAME}/{STAGE}')
+        model_version = mlflow_client.get_latest_versions(REGISTERED_MODEL_NAME, stages=[STAGE])[-1].version
+        print(f'Model {model_version} loaded successfully.')
         return True
     except mlflow.MlflowException as e:
         print(f'Failed to load model: {e}')
@@ -74,12 +77,13 @@ def health():
 def predict(data: DiabetesInput, auth:str=Depends(verify_api_key), db: Session = Depends(get_db)):
     input_data = pd.DataFrame([data.dict()])
     prediction = model.predict(input_data).tolist()[0]
+    model_version = mlflow_client.get_latest_versions(REGISTERED_MODEL_NAME, stages=[STAGE])[-1].version
 
     db_prediction = Prediction(
         id = uuid4(),
         input_json=json.dumps(data.dict()),
         prediction=prediction,
-        model_version=STAGE
+        model_version=model_version
     )
 
     db.add(db_prediction)
@@ -116,10 +120,41 @@ def reload_model(auth: str= Depends(verify_api_key)):
 
 @app.get('/get_data')
 def get_data(auth: str = Depends(verify_api_key), db: Session = Depends(get_db)):
-    data = db.query(Prediction).order_by(Prediction.timestamp.desc()).limit(100).all()
+    data = (
+        db.query(Prediction)
+        .join(Feedback, Feedback.prediction_id==Prediction.id)
+        .order_by(Prediction.timestamp.desc())
+        .limit(100)
+        .all()
+    )
 
     return {
         'result': data
+    }
+
+@app.get('/get_feedback_data')
+def get_feedback_data(auth: str = Depends(verify_api_key), db: Session = Depends(get_db)):
+    feedbacks = (
+        db.query(
+            Feedback.id,
+            Feedback.correct,
+            Feedback.timestamp,
+            Prediction.input_json,
+            Prediction.model_version
+        )
+        .join(Prediction, Prediction.id==Feedback.prediction_id)
+        .order_by(Feedback.timestamp.desc())
+        # .limit(100)
+        .all()
+    )
+
+    feedback_details = [
+        FeedbackDetail(id=str(feedback.id), correct=feedback.correct, timestamp=str(feedback.timestamp), input_json=feedback.input_json, model_version=feedback.model_version )
+        for feedback in feedbacks
+    ]
+
+    return {
+        'result': feedback_details
     }
 
 

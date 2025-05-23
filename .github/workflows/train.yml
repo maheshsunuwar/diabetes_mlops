@@ -31,7 +31,7 @@ jobs:
         run: |
           dvc pull -v
 
-      - name: Run Training
+      - name: Run Training and Retraining if needed
         env:
           MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
           MLFLOW_S3_ENDPOINT_URL: ${{ secrets.MLFLOW_S3_ENDPOINT_URL }}
@@ -40,6 +40,7 @@ jobs:
           STAGE: ${{ secrets.STAGE }}
         run: |
           python train.py
+          python train.py --retrain
       - name: Reload API model
         run: |
           curl -X POST https://diabetes.machinelearningdev.com/reload \
