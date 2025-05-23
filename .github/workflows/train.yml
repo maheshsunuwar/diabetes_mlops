@@ -39,6 +39,8 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           STAGE: ${{ secrets.STAGE }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          EXPERIMENT_NAME: ${{ secrets.EXPERIMENT_NAME }}
+          REGISTERED_MODEL_NAME: ${{ secrets.REGISTERED_MODEL_NAME }}
         run: |
           python train.py
           python train.py --retrain
