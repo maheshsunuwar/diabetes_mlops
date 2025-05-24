@@ -7,6 +7,7 @@ class FeedbackCreate(BaseModel):
     correct: bool
 class FeedbackDetail(BaseModel):
     id: str
+    prediction: str
     correct: bool
     timestamp: str
     input_json: str

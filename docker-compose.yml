@@ -17,3 +17,21 @@ services:
       - STAGE=$STAGE
       - EXPERIMENT_NAME=$EXPERIMENT_NAME
       - REGISTERED_MODEL_NAME=$REGISTERED_MODEL_NAME
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9004:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - api
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "9005:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+
+volumes:
+  grafana-data:

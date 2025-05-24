@@ -4,6 +4,7 @@ from uuid import uuid4, UUID
 from fastapi import Depends, FastAPI, HTTPException, Header
 import mlflow
 import pandas as pd
+from prometheus_fastapi_instrumentator import Instrumentator
 from pydantic import BaseModel
 import uvicorn
 from dotenv import load_dotenv
@@ -12,6 +13,7 @@ import os
 from sqlalchemy.orm import Session
 from db import DbSession, get_db, engine
 from models.models import Base, Feedback, Prediction
+from modules.crud import get_feedback_summary
 from schemas.feedback import FeedbackCreate, FeedbackDetail
 
 load_dotenv(override=True)
@@ -33,6 +35,8 @@ async def lifesapan(app: FastAPI):
     yield
 
 app = FastAPI(lifespan=lifesapan)
+
+Instrumentator().instrument(app=app).expose(app)
 
 class DiabetesInput(BaseModel):
     age: float
@@ -157,6 +161,18 @@ def get_feedback_data(auth: str = Depends(verify_api_key), db: Session = Depends
         'result': feedback_details
     }
 
+@app.get('/feedback_summary')
+def feedback_summary(auth: str= Depends(verify_api_key)):
+    total, correct, incorrect, accuracy = get_feedback_summary()
+
+    return {
+        'result': {
+            "total": total,
+            "correct": correct,
+            "incorrect": incorrect,
+            "accuracy": accuracy
+        }
+    }
 
 if __name__ == '__main__':
     uvicorn.run('app:app', host='0.0.0.0', port=9003)

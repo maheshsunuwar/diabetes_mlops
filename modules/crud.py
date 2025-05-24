@@ -13,7 +13,8 @@ def get_feedback_data():
             Feedback.correct,
             Feedback.timestamp,
             Prediction.input_json,
-            Prediction.model_version
+            Prediction.model_version,
+            Prediction.prediction
         )
         .join(Prediction, Prediction.id==Feedback.prediction_id)
         .order_by(Feedback.timestamp.desc())
@@ -22,3 +23,12 @@ def get_feedback_data():
     )
 
     return feedbacks
+
+def get_feedback_summary():
+    total = db.query(Feedback).count()
+    correct = db.query(Feedback).filter(Feedback.correct == True).count()
+    incorrect = db.query(Feedback).filter(Feedback.correct == False).count()
+
+    accuracy = round((correct/total)*100, 2) if total >9 else 0.0
+
+    return (total, correct, incorrect, accuracy)
