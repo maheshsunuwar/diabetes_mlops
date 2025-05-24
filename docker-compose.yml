@@ -20,7 +20,7 @@ services:
   prometheus:
     image: prom/prometheus
     ports:
-      - "9004:9090"
+      - "9005:9090"
     volumes:
       - ./monitoring/:/etc/prometheus.yml
     depends_on:
@@ -29,7 +29,7 @@ services:
   grafana:
     image: grafana/grafana
     ports:
-      - "9005:3000"
+      - "9006:3000"
     volumes:
       - grafana-data:/var/lib/grafana
 
