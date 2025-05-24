@@ -144,7 +144,8 @@ def get_feedback_data(auth: str = Depends(verify_api_key), db: Session = Depends
             Feedback.correct,
             Feedback.timestamp,
             Prediction.input_json,
-            Prediction.model_version
+            Prediction.model_version,
+            Prediction.prediction
         )
         .join(Prediction, Prediction.id==Feedback.prediction_id)
         .order_by(Feedback.timestamp.desc())
@@ -153,7 +154,7 @@ def get_feedback_data(auth: str = Depends(verify_api_key), db: Session = Depends
     )
 
     feedback_details = [
-        FeedbackDetail(id=str(feedback.id), correct=feedback.correct, timestamp=str(feedback.timestamp), input_json=feedback.input_json, model_version=feedback.model_version )
+        FeedbackDetail(id=str(feedback.id), correct=feedback.correct, timestamp=str(feedback.timestamp), input_json=feedback.input_json, model_version=feedback.model_version , prediction=feedback.prediction)
         for feedback in feedbacks
     ]
 
