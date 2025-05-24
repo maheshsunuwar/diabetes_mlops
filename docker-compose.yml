@@ -22,7 +22,7 @@ services:
     ports:
       - "9005:9090"
     volumes:
-      - ./monitoring/:/etc/prometheus.yml
+      - ./monitoring/prometheus.yml:/etc/prometheus.yml
       - prometheus_data:/prometheus
     command:
       - "--config.file=/etc/prometheus.yml"
