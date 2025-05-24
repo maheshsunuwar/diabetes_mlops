@@ -4,7 +4,6 @@ import streamlit as st
 from modules.nav import Navbar
 from dotenv import load_dotenv
 from uuid import UUID
-import shap
 
 st.set_page_config(page_title="Predict")
 
