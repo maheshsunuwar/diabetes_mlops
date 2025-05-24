@@ -22,7 +22,7 @@ services:
     ports:
       - "9004:9090"
     volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/:/etc/prometheus.yml
     depends_on:
       - api
 
